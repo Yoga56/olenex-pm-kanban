@@ -1,0 +1,33 @@
+{
+  "formatVersion": "2",
+  "header": {
+    "description": "Maintenance order list, Kanban and schedule per plant",
+    "originalLanguage": "en",
+    "abapLanguageVersion": "cloudDevelopment"
+  },
+  "generalInformation": {
+    "appType": "ui5",
+    "catalogId": "SAP_TC_UI5_REPO_UIAD",
+    "targetMappingTitle": "Maintenance Orders"
+  },
+  "ui5AppDetails": {
+    "appId": "zpm.kanban"
+  },
+  "navigation": {
+    "targetMappingId": "ZPM_KANBAN_UI5R_TM",
+    "semanticObject": "PMOrderKanban",
+    "action": "display",
+    "desktop": true,
+    "tablet": true
+  },
+  "tiles": [
+    {
+      "id": "ZPM_KANBAN_UI5R_AL",
+      "tileType": "static",
+      "isDefault": true,
+      "standard": {
+        "title": "Maintenance Orders"
+      }
+    }
+  ]
+}

@@ -1,0 +1,13 @@
+unmanaged implementation in class zbp_r_pm_kanbanorder unique;
+strict ( 2 );
+
+// Read-only view on maintenance orders. The only write is the action "reschedule",
+// which delegates to the released business object I_MaintenanceOrderTP.
+define behavior for ZR_PM_KANBANORDER alias Order
+lock master
+authorization master ( instance )
+{
+  action reschedule parameter ZA_PM_RESCHEDULE_PARAM;
+  // one status step per call: 10<->20 (release; 20->10 is not possible), 20<->30, 30<->40, 40<->50
+  action changeStatus parameter ZA_PM_STATUS_PARAM;
+}

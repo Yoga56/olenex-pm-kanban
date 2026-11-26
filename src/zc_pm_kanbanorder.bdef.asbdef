@@ -1,0 +1,8 @@
+projection;
+strict ( 2 );
+
+define behavior for ZC_PM_KANBANORDER alias Order
+{
+  use action reschedule;
+  use action changeStatus;
+}

@@ -1,0 +1,6 @@
+CLASS zbp_r_pm_kanbanorder DEFINITION PUBLIC ABSTRACT FINAL
+  FOR BEHAVIOR OF zr_pm_kanbanorder.
+ENDCLASS.
+
+CLASS zbp_r_pm_kanbanorder IMPLEMENTATION.
+ENDCLASS.

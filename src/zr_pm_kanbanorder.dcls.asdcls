@@ -1,0 +1,6 @@
+@EndUserText.label: 'Access control PM Order Kanban'
+@MappingRole: true
+define role ZR_PM_KANBANORDER {
+  grant select on ZR_PM_KANBANORDER
+    where inheriting conditions from entity I_MaintenanceOrderBasic;
+}

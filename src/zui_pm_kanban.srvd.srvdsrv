@@ -1,4 +1,4 @@
 @EndUserText.label: 'PM Order Kanban'
 define service ZUI_PM_KANBAN {
-  expose ZC_PM_KANBANORDER as Order;
+  expose ZC_PM_KANBANORDER as MaintOrder;
 }

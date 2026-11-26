@@ -12,13 +12,16 @@ define root view entity ZR_PM_KANBANORDER
       on  Ntf.MaintenanceNotification = Ord.MaintenanceNotification
       and Ord.MaintenanceNotification <> ''
 
+    left outer join I_LocationAccountAssignment as Loc
+      on Loc.MaintObjectLocAcctAssgmtNmbr = Ord.MaintObjectLocAcctAssgmtNmbr
+
   association [0..1] to I_EquipmentText       as _EquipmentText
     on  $projection.Equipment = _EquipmentText.Equipment
     and _EquipmentText.Language = $session.system_language
   association [0..1] to I_MaintenanceOrderPhaseText as _PhaseText
     on  $projection.MaintenanceProcessingPhase = _PhaseText.MaintenanceProcessingPhase
     and _PhaseText.Language = $session.system_language
-  association [0..1] to I_FunctionalLocation  as _FunctionalLocation
+  association [0..1] to I_FunctionalLocationStdVH_2 as _FunctionalLocation
     on  $projection.FunctionalLocation = _FunctionalLocation.FunctionalLocation
 {
   key Ord.MaintenanceOrder,
@@ -36,7 +39,7 @@ define root view entity ZR_PM_KANBANORDER
       Ord.MainWorkCenterPlant,
 
       // technical object
-      Ord._LocationAccountAssignment.FunctionalLocation as FunctionalLocation,
+      Loc.FunctionalLocation                            as FunctionalLocation,
       _FunctionalLocation.FunctionalLocationName        as FunctionalLocationName,
       Ord.Equipment,
       _EquipmentText.EquipmentName                      as EquipmentName,
@@ -64,5 +67,10 @@ define root view entity ZR_PM_KANBANORDER
       Ntf.NotificationCreationDate                      as NotificationReportDate,   // QMEL-QMDAT "Notification date"
       Ntf.CreationDate                                  as NotificationCreatedOn,    // QMEL-ERDAT "Created on"
 
-      Ord.LastChangeDateTime
+      Ord.LastChangeDateTime,
+
+      // needed by the access control inherited from I_MaintenanceOrderBasic
+      Ord.MaintObjectLocAcctAssgmtNmbr,
+      Ord._Equipment,
+      Ord._LocationAccountAssignment
 }

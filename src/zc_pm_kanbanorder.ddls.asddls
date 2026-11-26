@@ -28,5 +28,10 @@ define root view entity ZC_PM_KANBANORDER
       MaintenanceNotification,
       NotificationReportDate,
       NotificationCreatedOn,
-      LastChangeDateTime
+      LastChangeDateTime,
+
+      // needed by the inherited access control
+      MaintObjectLocAcctAssgmtNmbr,
+      _Equipment,
+      _LocationAccountAssignment
 }

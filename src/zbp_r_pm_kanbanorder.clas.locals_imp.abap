@@ -68,19 +68,36 @@ CLASS lhc_order IMPLEMENTATION.
         CONTINUE.
       ENDIF.
 
-      " keep the planned duration: shift the basic end date by the same number of days
-      DATA(new_end) = <cur>-MaintOrdBasicEndDate.
-      IF <cur>-MaintOrdBasicStartDate IS NOT INITIAL AND new_end IS NOT INITIAL.
-        new_end = new_end + ( new_start - <cur>-MaintOrdBasicStartDate ).
-      ELSEIF new_end IS NOT INITIAL AND new_end < new_start.
-        new_end = new_start.
+      " the released BO only lets us change the date-time fields: shift both by the same number of days (keeps the duration)
+      READ ENTITY i_maintenanceordertp
+        FIELDS ( MaintOrdBasicStartDateTime MaintOrdBasicEndDateTime )
+        WITH VALUE #( ( MaintenanceOrder = <key>-MaintenanceOrder ) )
+        RESULT DATA(orders_tp).
+      IF orders_tp IS INITIAL.
+        APPEND VALUE #( %tky = <key>-%tky %fail-cause = if_abap_behv=>cause-not_found ) TO failed-order.
+        CONTINUE.
+      ENDIF.
+
+      DATA(start_ts) = orders_tp[ 1 ]-MaintOrdBasicStartDateTime.
+      DATA(end_ts)   = orders_tp[ 1 ]-MaintOrdBasicEndDateTime.
+      IF <cur>-MaintOrdBasicStartDate IS INITIAL OR start_ts IS INITIAL.
+        CONVERT DATE new_start TIME '120000' INTO TIME STAMP start_ts TIME ZONE 'UTC'.
+        end_ts = start_ts.
+      ELSE.
+        DATA(seconds) = CONV i( ( new_start - <cur>-MaintOrdBasicStartDate ) * 86400 ).
+        start_ts = cl_abap_tstmp=>add( tstmp = start_ts secs = seconds ).
+        IF end_ts IS INITIAL.
+          end_ts = start_ts.
+        ELSE.
+          end_ts = cl_abap_tstmp=>add( tstmp = end_ts secs = seconds ).
+        ENDIF.
       ENDIF.
 
       MODIFY ENTITY i_maintenanceordertp
-        UPDATE FIELDS ( MaintOrdBasicStartDate MaintOrdBasicEndDate )
-        WITH VALUE #( ( MaintenanceOrder       = <key>-MaintenanceOrder
-                        MaintOrdBasicStartDate = new_start
-                        MaintOrdBasicEndDate   = new_end ) )
+        UPDATE FIELDS ( MaintOrdBasicStartDateTime MaintOrdBasicEndDateTime )
+        WITH VALUE #( ( MaintenanceOrder           = <key>-MaintenanceOrder
+                        MaintOrdBasicStartDateTime = start_ts
+                        MaintOrdBasicEndDateTime   = end_ts ) )
         FAILED   DATA(failed_tp)
         REPORTED DATA(reported_tp).
 

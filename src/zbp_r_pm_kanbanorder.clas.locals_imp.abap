@@ -60,6 +60,16 @@ CLASS lhc_order IMPLEMENTATION.
         CONTINUE.
       ENDIF.
 
+      IF <key>-%param-newenddate IS NOT INITIAL AND <key>-%param-newenddate < new_start.
+        APPEND VALUE #( %tky = <key>-%tky ) TO failed-order.
+        APPEND VALUE #( %tky = <key>-%tky
+                        %msg = new_message_with_text(
+                                 severity = if_abap_behv_message=>severity-error
+                                 text     = 'The plan end date must not be before the plan start date.' ) )
+               TO reported-order.
+        CONTINUE.
+      ENDIF.
+
       READ TABLE current ASSIGNING FIELD-SYMBOL(<cur>)
            WITH KEY maintenanceorder = <key>-maintenanceorder.
       IF sy-subrc <> 0.
@@ -91,6 +101,11 @@ CLASS lhc_order IMPLEMENTATION.
         ELSE.
           end_ts = cl_abap_tstmp=>add( tstmp = end_ts secs = seconds ).
         ENDIF.
+      ENDIF.
+
+      " an explicit end date overrides the shifted one (same 12:00 UTC convention as above)
+      IF <key>-%param-newenddate IS NOT INITIAL.
+        CONVERT DATE <key>-%param-newenddate TIME '120000' INTO TIME STAMP end_ts TIME ZONE 'UTC'.
       ENDIF.
 
       MODIFY ENTITY i_maintenanceordertp
